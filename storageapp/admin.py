@@ -1,3 +1,3 @@
 from django.contrib import admin
+from storageapp.models import Storage, StorageUser
 
-# Register your models here.
