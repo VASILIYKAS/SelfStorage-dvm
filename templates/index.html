@@ -16,7 +16,7 @@
 		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
-		<a class="navbar-brand" href="#">
+		<a class="navbar-brand" href="{% url 'index' %}">
 			<img src="{% static 'img/Vector.svg' %}" alt="[]">
 			<img src="{% static 'img/SelfStorage.svg' %}" alt="SelfStorage">
 		</a>
@@ -26,7 +26,7 @@
 					<a class="nav-link SelfStorage_black" href="#">Рассчитать стоимость</a>
 				</li>
 				<li class="nav-item me-5">
-					<a class="nav-link SelfStorage_black" href="#">Правила хранения</a>
+					<a class="nav-link SelfStorage_black" href="{% url 'faq' %}">Правила хранения</a>
 				</li>
 				<li class="nav-item me-5">
 					<a class="nav-link SelfStorage_black" href="#">Арендовать бокс</a>
@@ -319,7 +319,7 @@
 <footer class="container py-5">
 	<div class="row mb-5">
 		<div class="col-6 col-md-4 d-flex flex-column mb-3">
-			<a href="#" class="navbar-brand">
+			<a href="{% url 'index' %}" class="navbar-brand">
 				<img src="{% static 'img/Vector.svg' %}" alt="[]">
 				<img src="{% static 'img/SelfStorage.svg' %}" alt="SelfStorage">
 			</a>
@@ -349,7 +349,7 @@
 			<p><a href="#" class="link-dark text-decoration-none">Арендовать бокс</a></p>
 		</div>
 		<div class="col-6 col-md-4 d-flex flex-column">
-			<p><a href="#" class="link-dark text-decoration-none">Правила хранения</a></p>
+			<p><a href="{% url 'faq' %}" class="link-dark text-decoration-none">Правила хранения</a></p>
 			<p><a href="#" class="link-dark text-decoration-none">Адреса складов</a></p>
 			<p><a href="#" class="link-dark text-decoration-none">Отзывы</a></p>
 		</div>
