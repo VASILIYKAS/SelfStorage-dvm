@@ -17,8 +17,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from storageapp import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index),
+    path('', views.index, name='index'),
+    path('boxes/', views.boxes, name='boxes'),
+    path('faq/', views.faq, name='faq'),
+    path('my-rent/', views.my_rent, name='my_rent'),
+    path('my-rent-empty/', views.my_rent, name='my_rent_empty'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
