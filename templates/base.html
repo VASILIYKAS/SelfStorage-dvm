@@ -32,7 +32,7 @@
 					<a class="nav-link SelfStorage_black" href="{% url 'boxes' %}#rent_boxes">Арендовать бокс</a>
 				</li>
 				<li class="nav-item me-5">
-					<a class="nav-link SelfStorage_green" href="#" data-bs-toggle="modal" data-bs-target="#SignModal">Войти</a>
+					<a class="nav-link SelfStorage_green" href="#" data-bs-toggle="modal" data-bs-target="#SignModal" >Войти</a>
 				</li>
 				<li class="nav-item d-flex align-items-center">
 					<div class="d-flex justify-content-center align-items-center rounded-pill SelfStorage__bg_green me-2" style="height: 36px; width: 36px;">
@@ -68,8 +68,9 @@
 			<div class="modal-header border-0">
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
-			<div class="modal-body d-flex justify-content-center align-items-center">
-				<form class="d-flex flex-column align-items-center" style="max-width: 420px">
+			<div  class="modal-body d-flex justify-content-center align-items-center">
+				<form method="POST" action="{% url 'register' %}" class="d-flex flex-column align-items-center" style="max-width: 420px">
+					{% csrf_token %}
 					<h1 class="modal-title text-center fw-bold mb-3">Регистрация</h1>
 					<input type="email" required name="EMAIL_CREATE" class="form-control border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="E-mail">
 					<input type="text" required name="PASSWORD_CREATE" class="form-control border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Пароль">
@@ -89,7 +90,8 @@
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body d-flex justify-content-center align-items-center">
-				<form class="d-flex flex-column align-items-center" style="max-width: 420px">
+				<form method="POST" action="{% url 'login' %}"  class="d-flex flex-column align-items-center" style="max-width: 420px">
+					{% csrf_token %}
 					<h1 class="modal-title text-center fw-bold mb-3">Вход</h1>
 					<input type="email" required name="EMAIL" class="form-control  border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="E-mail">
 					<input type="text" required name="PASSWORD" class="form-control  border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Пароль">
