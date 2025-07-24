@@ -29,7 +29,7 @@
 					<a class="nav-link SelfStorage_black" href="{% url 'faq' %}">Правила хранения</a>
 				</li>
 				<li class="nav-item me-5">
-					<a class="nav-link SelfStorage_black" href="#">Арендовать бокс</a>
+					<a class="nav-link SelfStorage_black" href="{% url 'boxes' %}#rent_boxes">Арендовать бокс</a>
 				</li>
 				<li class="nav-item me-5">
 					<a class="nav-link SelfStorage_green" href="#" data-bs-toggle="modal" data-bs-target="#SignModal">Войти</a>
@@ -110,11 +110,27 @@
 			<form class="">
 				<input type="text" required name="EMAIL1" class="form-control border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Укажите ваш e-mail">
 				<button class="btn border-8 py-3 px-5 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange">Рассчитать стоимость</button>
-				<span class="text-center fw-light">Нажимая на кнопку, вы подтверждаете свое <a href="#" class="link-dark">согласие на обработку персональных данных</a></span>
+				<span class="text-center fw-light">Нажимая на кнопку, вы подтверждаете свое <a href="#" class="link-dark" data-bs-toggle="modal" data-bs-target="#ConsentModal">согласие на обработку персональных данных</a></span>
 			</form>
 		</div>
 		<div class="col-12 col-lg-6 SelfStorage__img"></div>
 	</article>
+    <aside class="modal fade" id="ConsentModal" tabindex="-1" aria-labelledby="ConsentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ConsentModalLabel">Согласие на обработку персональных данных</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Данный сайт обрабатывает ваши персональные данные в целях регистрации, авторизации и доставки услуг. Ваши данные будут защищены в соответствии с Федеральным законом № 152-ФЗ "О персональных данных". Продолжая регистрацию, вы выражаете свое согласие на обработку предоставленной информации.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Принимаю</button>
+                </div>
+            </div>
+        </div>
+    </aside>
 
 	<article class="text-center row pt-header">
 		<h1 class=" fw-bold SelfStorage_green mb-5">Чем мы можем помочь?</h1>
