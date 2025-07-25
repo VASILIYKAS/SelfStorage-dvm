@@ -14,7 +14,7 @@ def index(request):
         email = email1 if email1 else email2
         if email:
             request.session['user_email'] = email
-            response = HttpResponseRedirect('/boxes/#calculated_cost')
+            response = HttpResponseRedirect('/boxes/#rent_boxes')
             return response
     return render(request, 'index.html')
 
