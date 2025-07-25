@@ -34,10 +34,10 @@ class StorageUser(AbstractUser):
     email = models.EmailField(
         unique=True,
         verbose_name='адрес почты',
-        )
+    )
     date_joined = models.DateTimeField(
         auto_now_add=True
-        )
+    )
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
     phone_number = PhoneNumberField(
@@ -81,7 +81,7 @@ class Storage(models.Model):
         StorageUser,
         related_name='storages',
         verbose_name='Пользователи'
-        )
+    )
 
     def __str__(self):
         return self.location
