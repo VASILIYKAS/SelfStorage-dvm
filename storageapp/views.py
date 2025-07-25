@@ -6,7 +6,6 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponseRedirect
 
-
 def index(request):
     if request.method == 'POST':
         email1 = request.POST.get('EMAIL1')
@@ -45,12 +44,12 @@ def register_user(request):
 
         if password != password_confirm:
             messages.error(request, "Пароли не совпадают")
-            return redirect("index")
+            return redirect("register")
 
         if StorageUser.objects.filter(email=email).exists():
             messages.error(
                 request, "Пользователь с таким email уже существует")
-            return redirect("index")
+            return redirect("register")
 
         try:
             user = StorageUser.objects.create_user(
@@ -65,9 +64,9 @@ def register_user(request):
             return redirect("my_rent")
         except Exception as e:
             messages.error(request, f"Ошибка регистрации: {str(e)}")
-            return redirect("index")
+            return redirect("register")
 
-    return render(request, "index.html")
+    return render(request, "authorization/register.html")
 
 
 def login_user(request):
@@ -82,6 +81,6 @@ def login_user(request):
             return redirect("my_rent")
         else:
             messages.error(request, "Неверный email или пароль")
-            return redirect("index")
+            return redirect("login")
 
-    return render(request, "index.html")
+    return render(request, "authorization/login.html")
