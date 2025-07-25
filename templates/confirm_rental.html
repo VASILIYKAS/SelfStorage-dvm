@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Подтверждение аренды бокса</h2>
+    <p>Вы собираетесь арендовать бокс №{{ box.number }}</p>
+    <p>Размер: {{ box.length }} x {{ box.width }} x {{ box.height }} м</p>
+    <p>Площадь: {{ box.area }} м²</p>
+    <p>Цена: {{ box.price }} ₽/месяц</p>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="self_delivery" name="self_delivery">
+            <label class="form-check-label" for="self_delivery">
+                Самостоятельная доставка вещей
+            </label>
+        </div>
+        <button type="submit" class="btn btn-primary">Подтвердить аренду</button>
+        <a href="{% url 'boxes' %}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

@@ -49,7 +49,7 @@ class StorageUser(AbstractUser):
     phone_number = PhoneNumberField(
         help_text='Номер телефона клиента',
         verbose_name='Номер телефона'
-        )
+    )
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
@@ -87,6 +87,12 @@ class Storage(models.Model):
         default=1,
         verbose_name='Температура'
     )
+    image = models.ImageField(
+        upload_to='storage_images/',
+        verbose_name='Изображение склада',
+        null=True,
+        blank=True
+    )
     height = models.IntegerField(
         default=1,
         verbose_name='Высота',
@@ -104,18 +110,18 @@ class Storage(models.Model):
 
 class Order(models.Model):
     STATUS_CHOICES = [
-     ('В процессе', 'В процессе'),
-     ('Завершен', 'Завершен'),
-     ('Отменен', 'Отменен'),
-     ('Доставка', 'Доставка')
-     ]
+        ('В процессе', 'В процессе'),
+        ('Завершен', 'Завершен'),
+        ('Отменен', 'Отменен'),
+        ('Доставка', 'Доставка')
+    ]
 
     status = models.CharField(
         default='В процессе',
         max_length=100,
         choices=STATUS_CHOICES,
         verbose_name='Статус'
-        )
+    )
 
     rental_start_date = models.DateTimeField(
         null=False,
@@ -137,6 +143,14 @@ class Order(models.Model):
         related_name='orders',
         verbose_name='Клиенты'
     )
+    box = models.ForeignKey(
+        'Box',
+        on_delete=models.CASCADE,
+        related_name='orders',
+        verbose_name='Арендованный бокс',
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
         return f'Заказ пользователя {self.storage_user}'
@@ -154,17 +168,17 @@ class Box(models.Model):
         max_digits=4,
         decimal_places=2,
         verbose_name='Длина'
-        )
+    )
     width = models.DecimalField(
         max_digits=4,
         decimal_places=2,
         verbose_name='Ширина'
-        )
+    )
     height = models.DecimalField(
         max_digits=4,
         decimal_places=2,
         verbose_name='Высота'
-        )
+    )
 
     floor = models.IntegerField(
         default=0,
@@ -203,17 +217,17 @@ class UserItem(models.Model):
         max_digits=4,
         decimal_places=2,
         verbose_name='Длина'
-        )
+    )
     width = models.DecimalField(
         max_digits=4,
         decimal_places=2,
         verbose_name='Ширина'
-        )
+    )
     height = models.DecimalField(
         max_digits=4,
         decimal_places=2,
         verbose_name='Высота'
-        )
+    )
     user = models.ForeignKey(
         StorageUser,
         on_delete=models.SET_NULL,

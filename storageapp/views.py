@@ -1,3 +1,6 @@
+from datetime import timedelta
+from django.utils import timezone
+from .models import Storage, Box, Order
 from .models import StorageUser
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
@@ -6,6 +9,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from phonenumber_field.phonenumber import PhoneNumber
+from .models import StorageUser, Storage, Box, Order
 
 
 def index(request):
@@ -29,7 +33,19 @@ def index(request):
 
 
 def boxes(request):
-    return render(request, 'boxes.html')
+    storages = Storage.objects.all()
+    boxes = Box.objects.filter(user__isnull=True)
+    boxes_to3 = boxes.filter(area__lte=3)
+    boxes_to10 = boxes.filter(area__gt=3, area__lte=10)
+    boxes_from10 = boxes.filter(area__gt=10)
+
+    return render(request, 'boxes.html', {
+        'storages': storages,
+        'boxes': boxes,
+        'boxes_to3': boxes_to3,
+        'boxes_to10': boxes_to10,
+        'boxes_from10': boxes_from10,
+    })
 
 
 def faq(request):
@@ -38,7 +54,41 @@ def faq(request):
 
 @login_required
 def my_rent(request):
-    return render(request, 'my-rent.html')
+    user_boxes = Box.objects.filter(
+        user=request.user).select_related('storage')
+    user_orders = Order.objects.filter(
+        storage_user=request.user).prefetch_related('storage_user')
+
+    return render(request, 'my-rent.html', {
+        'user_boxes': user_boxes,
+        'user_orders': user_orders,
+    })
+
+
+def confirm_rental(request, box_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    try:
+        box = Box.objects.get(id=box_id, user__isnull=True)
+    except Box.DoesNotExist:
+        messages.error(request, "Этот бокс уже занят или не существует")
+        return redirect('boxes')
+
+    if request.method == 'POST':
+        box.user = request.user
+        box.save()
+        Order.objects.create(
+            storage_user=request.user,
+            box=box,
+            rental_start_date=timezone.now(),
+            end_rental_date=timezone.now() + timedelta(days=30),
+            self_delivery=request.POST.get('self_delivery', False)
+        )
+
+        messages.success(request, "Бокс успешно арендован!")
+        return redirect('my_rent')
+    return render(request, 'confirm_rental.html', {'box': box})
 
 
 @login_required
