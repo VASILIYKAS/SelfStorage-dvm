@@ -29,6 +29,7 @@ urlpatterns = [
     path('my-rent-empty/', views.my_rent, name='my_rent_empty'),
     path('register/', views.register_user, name='register'),
     path('login/', views.login_user, name='login'),
+    path('update-profile/', views.update_profile, name='update_profile'),
 ]
 
 if settings.DEBUG:

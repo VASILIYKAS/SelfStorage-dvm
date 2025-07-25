@@ -3,8 +3,10 @@ from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
+from phonenumber_field.phonenumber import PhoneNumber
+
 
 def index(request):
     if request.method == 'POST':
@@ -84,3 +86,46 @@ def login_user(request):
             return redirect("login")
 
     return render(request, "authorization/login.html")
+
+
+@login_required
+def update_profile(request):
+    if request.method == "POST":
+        first_name = request.POST.get("FIRST_NAME")
+        last_name = request.POST.get("LAST_NAME")
+        email = request.POST.get("EMAIL_EDIT")
+        phone_number = request.POST.get("PHONE_EDIT")
+        password = request.POST.get("PASSWORD_EDIT")
+
+        user = request.user
+
+        try:
+            if email != user.email and StorageUser.objects.filter(email=email).exists():
+                messages.error(
+                    request, "Пользователь с таким email уже существует")
+                return redirect("my_rent")
+
+            user.first_name = first_name
+            user.last_name = last_name
+            user.email = email
+            if phone_number:
+                user.phone_number = PhoneNumber.from_string(
+                    phone_number, region='RU')
+            if password and password != "********":
+                user.set_password(password)
+            user.save()
+
+            #  Здесь нужно переавторизовать, иначе юзера перебрасывает в раздел логина
+            if email != request.user.email or (password and password != "********"):
+                user = authenticate(request, email=email, password=password if password and password !=
+                                    "********" else request.POST.get("PASSWORD"))
+                if user is not None:
+                    login(request, user)
+
+            messages.success(request, "Профиль успешно обновлен!")
+            return redirect("my_rent")
+        except Exception as e:
+            messages.error(request, f"Ошибка при обновлении профиля: {str(e)}")
+            return redirect("my_rent")
+
+    return redirect("my_rent")
