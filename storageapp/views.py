@@ -4,10 +4,18 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
-
+from django.http import HttpResponseRedirect
 
 
 def index(request):
+    if request.method == 'POST':
+        email1 = request.POST.get('EMAIL1')
+        email2 = request.POST.get('EMAIL2')
+        email = email1 if email1 else email2
+        if email:
+            request.session['user_email'] = email
+            response = HttpResponseRedirect('/boxes/#calculated_cost')
+            return response
     return render(request, 'index.html')
 
 
