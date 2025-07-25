@@ -46,7 +46,9 @@ class StorageUser(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
     phone_number = PhoneNumberField(
-        help_text='Номер телефона клиента')
+        help_text='Номер телефона клиента',
+        verbose_name='Номер телефона'
+        )
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
@@ -56,18 +58,12 @@ class Storage(models.Model):
     location = models.CharField(
         max_length=100,
         default='',
-        verbose_name='Локация',
+        verbose_name='Город',
     )
     adress = models.CharField(
         max_length=100,
         default='',
         verbose_name='Адрес'
-    )
-    condition = models.CharField(
-        max_length=50,
-        verbose_name='Условие',
-        default='',
-        blank=True
     )
     available_boxes_count = models.IntegerField(
         default=0,
@@ -93,12 +89,6 @@ class Storage(models.Model):
     height = models.IntegerField(
         default=1,
         verbose_name='Высота',
-    )
-
-    user = models.ManyToManyField(
-        StorageUser,
-        related_name='storages',
-        verbose_name='Пользователи'
     )
 
     def __str__(self):
@@ -141,6 +131,9 @@ class Order(models.Model):
         verbose_name='Клиенты'
     )
 
+    def __str__(self):
+        return f'Заказ пользователя {self.storage_user}'
+
 
 class Box(models.Model):
     number = models.CharField(
@@ -179,6 +172,7 @@ class Box(models.Model):
         StorageUser,
         on_delete=models.SET_NULL,
         null=True,
+        blank=True,
         related_name='user_boxes',
         verbose_name='Клиенты'
     )
@@ -189,6 +183,9 @@ class Box(models.Model):
         related_name='boxes',
         verbose_name='Склады'
     )
+
+    def __str__(self):
+        return f'Бокс {self.number}'
 
 
 class UserItem(models.Model):
@@ -223,3 +220,6 @@ class UserItem(models.Model):
         related_name='box_items',
         verbose_name='Вещи ячейки'
     )
+
+    def __str__(self):
+        return f'Вещи клиента {self.user}'
