@@ -201,14 +201,117 @@
 								<span class="SelfStorage_grey mb-3">Оплата за месяц</span>
 							</div>
 							<div class="d-flex flex-column align-items-center align-items-lg-start">
-								<a href="#pills-tab" role="button" class="btn w-75 fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_green SelfStorage__btn2_green mb-3">Арендовать бокс</a>
-								<button class="btn w-75 fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_orange SelfStorage__btn2_orange">Позвонить мне</button>
+								{% if request.user.is_authenticated %}
+								<a href="#pills-tab" role="button" class="btn w-75 fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_green SelfStorage__btn2_green mb-3" data-bs-toggle="modal" data-bs-target="#ConsentModalregistration">Арендовать бокс</a>
+								{% else %}
+								<a href="{% url 'login' %}" role="button" class="btn w-75 fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_green SelfStorage__btn2_green mb-3">Арендовать бокс</a>
+								{% endif %}
+								{% if request.user.is_authenticated %}
+								<a href="#pills-tab" class="btn w-75 fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_orange SelfStorage__btn2_orange mb-3" data-bs-toggle="modal" data-bs-target="#ConsentModalcallme">Позвонить мне</a>
+								{% else %}
+								<a href="{% url 'login' %}" class="btn w-75 fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_orange SelfStorage__btn2_orange">Позвонить мне</a>
+								{% endif %}
 							</div>
 							<!-- <a href="#" class="text-center text-lg-start mt-4 SelfStorage_orange">Нужна помощь?</a> -->
 						</div>
 					</div>
 				</div>
 			</div>
+			<aside class="modal fade" id="ConsentModalcallme" tabindex="-1" aria-labelledby="ConsentModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="ConsentModalLabel">Уведомление</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<p>С вами свяжутся в течении 20 минут.
+								Пожалуйста ожидайте.
+							</p>
+						</div>
+					</div>
+				</div>
+			</aside>
+			<aside class="modal fade" id="ConsentModalregistration" tabindex="-1" aria-labelledby="ConsentModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="ConsentModalLabel">Оформление</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<p>Вам нужна доставка?</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#ConsentModaldelivery">Да</button>
+							<button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#ConsentModalconfirm">Нет</button>
+						</div>
+					</div>
+				</div>
+			</aside>
+			<aside class="modal fade" id="ConsentModaldelivery" tabindex="-1" aria-labelledby="ConsentModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="ConsentModalLabel">Оформление</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<p>Пожалуйста укажите адрес откуда необходимо забрать вашу вещь.</p>
+						</div>
+						<div class="modal-footer">
+							<form>
+								<div class="form-group">
+									<label for="adressInput">Адрес</label>
+									<input type="adress" class="form-control" id="adresslInput" placeholder="Введите ваш адрес">
+									<p></p>
+									<button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#ConsentModalconfirm">Продолжить</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</aside>
+			<aside class="modal fade" id="ConsentModalconfirm" tabindex="-1" aria-labelledby="ConsentModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="ConsentModalLabel">Оформление</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<p>Пожалуйста подтвердите свой выбор:</p>
+							<p>из бд: Адрес склада</p>
+							<p>из бд: Номер бокса</p>
+							<p>из бд: Объем</p>
+							<p>из бд: Высота</p>
+							<p>из бд: Размеры</p>
+							<p>из бд: и тд.</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#ConsentModaldescription">Арендовать</button>
+							<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Отмена</button>
+						</div>
+					</div>
+				</div>
+			</aside>
+			<aside class="modal fade" id="ConsentModaldescription" tabindex="-1" aria-labelledby="ConsentModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="ConsentModalLabel">Оформление</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<p>Вы успешно арендовали бокс!</p>
+							<p>Вы можете найти его у себя в личном кабинете</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Ок</button>
+						</div>
+					</div>
+				</div>
+			</aside>
 			<div class="tab-pane fade" id="pills-Odintsovo" role="tabpanel" aria-labelledby="pills-Odintsovo-tab">
 				<h1 class="text-center mb-4 fw-bold">Одинцово, ул. Серверная, д. 36</h1>
 				<div class="row d-flex flex-column mb-5">
@@ -270,7 +373,7 @@
 								<span class="SelfStorage_grey mb-3">Оплата за месяц</span>
 							</div>
 							<div class="d-flex flex-column align-items-center align-items-lg-start">
-								<a href="#pills-tab" role="button" class="btn w-75 fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_green SelfStorage__btn2_green mb-3">Арендовать бокс</a>
+								<a href="#pills-tab" role="button" class="btn w-75 fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_green SelfStorage__btn2_green mb-3" data-bs-toggle="modal" data-bs-target="#ConsentModal2">Арендовать бокс</a>
 								<button class="btn w-75 fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_orange SelfStorage__btn2_orange">Позвонить мне</button>
 							</div>
 							<!-- <a href="#" class="text-center text-lg-start mt-4 SelfStorage_orange">Нужна помощь?</a> -->
