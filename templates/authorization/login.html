@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: calc(100vh - 200px);">
+    <form method="POST" action="{% url 'login' %}" class="d-flex flex-column align-items-center" style="max-width: 420px">
+        {% csrf_token %}
+        {% if messages %}
+            <div class="alert alert-danger" role="alert">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <h1 class="text-center fw-bold mb-3">Вход</h1>
+        <input type="email" required name="EMAIL" class="form-control border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="E-mail">
+        <input type="password" required name="PASSWORD" class="form-control border-8 mb-4 py-3 px-5 border-0 fs_24 SelfStorage__bg_lightgrey" placeholder="Пароль">
+        {% comment %} <a href="#" class="SelfStorage_orange">Забыли пароль?</a>      Можем пока закоммитить для мвп   {% endcomment %}
+        <button class="btn border-8 py-3 px-5 mt-5 mb-3 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange">Войти</button>
+        <span>Нет аккаунта? <a href="{% url 'register' %}" class="SelfStorage_orange">Зарегистрируйтесь на сайте</a></span>
+    </form>
+</div>
+{% endblock %}
