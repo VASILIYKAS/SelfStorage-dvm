@@ -1,7 +1,7 @@
 from .models import StorageUser
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
@@ -10,13 +10,21 @@ from phonenumber_field.phonenumber import PhoneNumber
 
 def index(request):
     if request.method == 'POST':
-        email1 = request.POST.get('EMAIL1')
-        email2 = request.POST.get('EMAIL2')
-        email = email1 if email1 else email2
-        if email:
+        if request.user.is_authenticated:
+            # Юзать имейл юзера, если он уже в бд
+            email = request.user.email
             request.session['user_email'] = email
-            response = HttpResponseRedirect('/boxes/#rent_boxes')
-            return response
+            return HttpResponseRedirect('/boxes/#rent_boxes')
+        else:
+            email1 = request.POST.get('EMAIL1')
+            email2 = request.POST.get('EMAIL2')
+            email = email1 if email1 else email2
+            if email:
+                request.session['user_email'] = email
+                return HttpResponseRedirect('/boxes/#rent_boxes')
+            else:
+                messages.error(request, "Пожалуйста, укажите ваш email")
+                return redirect('index')
     return render(request, 'index.html')
 
 
@@ -115,7 +123,6 @@ def update_profile(request):
                 user.set_password(password)
             user.save()
 
-            #  Здесь нужно переавторизовать, иначе юзера перебрасывает в раздел логина
             if email != request.user.email or (password and password != "********"):
                 user = authenticate(request, email=email, password=password if password and password !=
                                     "********" else request.POST.get("PASSWORD"))
@@ -129,3 +136,8 @@ def update_profile(request):
             return redirect("my_rent")
 
     return redirect("my_rent")
+
+
+def logout_user(request):
+    logout(request)
+    return redirect('index')
