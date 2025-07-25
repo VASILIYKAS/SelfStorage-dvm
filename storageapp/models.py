@@ -24,6 +24,7 @@ class StorageUser(AbstractUser):
     username = None
     objects = CustomUserManager()
     photo = models.ImageField(
+        upload_to='storage_images/',
         verbose_name='Фото',
         null=True,
         blank=True
@@ -89,6 +90,12 @@ class Storage(models.Model):
     height = models.IntegerField(
         default=1,
         verbose_name='Высота',
+    )
+    image = models.ImageField(
+        upload_to='storage_images/',
+        verbose_name='Изображение склада',
+        null=True,
+        blank=True
     )
 
     def __str__(self):
