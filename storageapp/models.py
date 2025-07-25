@@ -88,6 +88,7 @@ class Storage(models.Model):
 
     temperature = models.IntegerField(
         default=1,
+        verbose_name='Температура'
     )
     height = models.IntegerField(
         default=1,
@@ -222,10 +223,3 @@ class UserItem(models.Model):
         related_name='box_items',
         verbose_name='Вещи ячейки'
     )
-    
-
-
-
-
-
-
