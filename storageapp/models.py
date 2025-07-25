@@ -97,12 +97,6 @@ class Storage(models.Model):
         default=1,
         verbose_name='Высота',
     )
-    image = models.ImageField(
-        upload_to='storage_images/',
-        verbose_name='Изображение склада',
-        null=True,
-        blank=True
-    )
 
     def __str__(self):
         return self.location
