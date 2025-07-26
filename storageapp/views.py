@@ -9,6 +9,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from phonenumber_field.phonenumber import PhoneNumber
+import phonenumbers
+
 from .models import StorageUser, Storage, Box, Order
 
 
@@ -78,16 +80,23 @@ def confirm_rental(request, box_id):
     if request.method == 'POST':
         box.user = request.user
         box.save()
+
+        delivery = request.POST.get('delivery') == 'on'
+        address = request.POST.get(
+            'address', '') if not delivery else None
+
         Order.objects.create(
             storage_user=request.user,
             box=box,
             rental_start_date=timezone.now(),
             end_rental_date=timezone.now() + timedelta(days=30),
-            self_delivery=request.POST.get('self_delivery', False)
+            delivery=delivery,
+            address=address
         )
 
         messages.success(request, "Бокс успешно арендован!")
         return redirect('my_rent')
+
     return render(request, 'confirm_rental.html', {'box': box})
 
 
@@ -99,9 +108,11 @@ def my_rent_empty(request):
 def register_user(request):
     if request.method == "POST":
         email = request.POST.get("EMAIL_CREATE")
+        phone_number = request.POST.get("PHONE_CREATE")
         password = request.POST.get("PASSWORD_CREATE")
         password_confirm = request.POST.get("PASSWORD_CONFIRM")
 
+        normalized_phone = phonenumbers.parse(str(phone_number), "RU")
         if password != password_confirm:
             messages.error(request, "Пароли не совпадают")
             return redirect("register")
@@ -117,7 +128,7 @@ def register_user(request):
                 password=password,
                 first_name="",
                 last_name="",
-                phone_number=""
+                phone_number=normalized_phone
             )
             login(request, user)
             messages.success(request, "Регистрация прошла успешно!")

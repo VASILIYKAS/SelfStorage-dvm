@@ -2,23 +2,46 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-5">
+<div style="padding-top:150px"></div>
+<div class="container mt-1">
     <h2>Подтверждение аренды бокса</h2>
     <p>Вы собираетесь арендовать бокс №{{ box.number }}</p>
     <p>Размер: {{ box.length }} x {{ box.width }} x {{ box.height }} м</p>
     <p>Площадь: {{ box.area }} м²</p>
     <p>Цена: {{ box.price }} ₽/месяц</p>
+    <p>Адрес бокса: {{ box.storage.adress }}, {{ box.storage.location }}</p>
+
+    
+
     
     <form method="POST">
         {% csrf_token %}
         <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" id="self_delivery" name="self_delivery">
+            <input class="form-check-input"  type="checkbox" id="self_delivery" name="self_delivery" required='true'>
             <label class="form-check-label" for="self_delivery">
-                Самостоятельная доставка вещей
+                Бесплатная доставка 
             </label>
         </div>
+        
+        <div class="mb-3" id="address-field" style="display: none;">
+            <label for="address" class="form-label">Адрес для доставки</label>
+            <textarea class="form-control" id="address" name="address" rows="3"></textarea>
+        </div>
+        
         <button type="submit" class="btn btn-primary">Подтвердить аренду</button>
         <a href="{% url 'boxes' %}" class="btn btn-secondary">Отмена</a>
     </form>
 </div>
+
+<script>
+document.getElementById('self_delivery').addEventListener('change', function() {
+    const addressField = document.getElementById('address-field');
+    if (this.checked) {
+        addressField.style.display = 'block';
+
+    } else {
+        addressField.style.display = 'none';
+    }
+});
+</script>
 {% endblock %}

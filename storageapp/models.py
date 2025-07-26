@@ -44,6 +44,7 @@ class StorageUser(AbstractUser):
     date_joined = models.DateTimeField(
         auto_now_add=True
     )
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
     phone_number = PhoneNumberField(
@@ -116,6 +117,11 @@ class Order(models.Model):
         choices=STATUS_CHOICES,
         verbose_name='Статус'
     )
+    address = models.TextField(
+        verbose_name='Адрес доставки',
+        blank=True,
+        null=True
+    )
 
     rental_start_date = models.DateTimeField(
         null=False,
@@ -127,7 +133,7 @@ class Order(models.Model):
         blank=False,
         verbose_name='Дата окончания заказа'
     )
-    self_delivery = models.BooleanField(
+    delivery = models.BooleanField(
         default=False
     )
 
@@ -234,6 +240,12 @@ class UserItem(models.Model):
         on_delete=models.CASCADE,
         related_name='box_items',
         verbose_name='Вещи ячейки'
+    )
+
+    items = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name="Описание вещей"
     )
 
     def __str__(self):

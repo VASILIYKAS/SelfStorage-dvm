@@ -1,3 +1,6 @@
-django==5.2.4
+Django==5.2.4
+django-admin-sortable2==2.2.8
 django-phonenumber-field==8.1.0
 phonenumbers==9.0.10
+pillow==11.3.0
+

@@ -1,44 +1,80 @@
+# admin.py
 from django.contrib import admin
 from adminsortable2.admin import SortableStackedInline
-
 from storageapp.models import Storage, StorageUser, Box, UserItem, Order
 
 
 @admin.register(StorageUser)
-class StorageUser(admin.ModelAdmin):
-    search_fields = ['email']
+class StorageUserAdmin(admin.ModelAdmin):
+    search_fields = ['email', 'first_name', 'last_name', 'phone_number']
     list_display = [
         'first_name',
         'last_name',
-        'phone_number'
+        'email',
+        'phone_number',
+        'date_joined'
     ]
+    list_filter = ['date_joined']
+    ordering = ['-date_joined']
+
 
 class BoxInline(admin.StackedInline):
     model = Box
     extra = 1
 
+
 @admin.register(Storage)
-class Storage(admin.ModelAdmin):
+class StorageAdmin(admin.ModelAdmin):
     inlines = [BoxInline]
     list_display = [
         'location',
+        'adress',
         'available_boxes_count',
         'total_boxes_count',
-        'temperature', 
+        'temperature',
         'height',
-        ]
+    ]
+    search_fields = ['location', 'adress']
+
 
 @admin.register(Box)
-class Box(admin.ModelAdmin):
-    pass
-    
+class BoxAdmin(admin.ModelAdmin):
+    list_display = [
+        'number',
+        'storage',
+        'user',
+        'price',
+        'floor',
+        'area'
+    ]
+    list_filter = ['storage', 'floor']
+    search_fields = ['number', 'user__email']
+
 
 @admin.register(Order)
-class Order(admin.ModelAdmin):
-    pass
+class OrderAdmin(admin.ModelAdmin):
+    list_display = [
+        'id',
+        'storage_user',
+        'box',
+        'status',
+        'rental_start_date',
+        'end_rental_date'
+    ]
+    list_filter = ['status', 'rental_start_date']
+    search_fields = [
+        'storage_user__email',
+        'storage_user__phone_number',
+        'box__number'
+    ]
 
 
 @admin.register(UserItem)
-class UserItem(admin.ModelAdmin):
-    pass
-
+class UserItemAdmin(admin.ModelAdmin):
+    list_display = [
+        'user',
+        'boxes',
+        'area',
+        'height'
+    ]
+    search_fields = ['user__email', 'boxes__number']
