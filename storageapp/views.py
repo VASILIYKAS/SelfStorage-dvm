@@ -64,8 +64,12 @@ def faq(request):
 def my_rent(request):
     user_boxes = Box.objects.filter(
         user=request.user).select_related('storage')
+
     user_orders = Order.objects.filter(
-        storage_user=request.user).prefetch_related('storage_user')
+        storage_user=request.user,
+        box__in=user_boxes,
+        status__in=['В процессе', 'Доставка']
+    ).select_related('box')
 
     return render(request, 'my-rent.html', {
         'user_boxes': user_boxes,
@@ -208,10 +212,10 @@ def update_profile(request):
 @login_required
 def open_box(request, box_id):
     box = Box.objects.get(id=box_id, user=request.user)
-    
+
     alphabet = string.ascii_letters + string.digits
     key = ''.join(random.choice(alphabet) for _ in range(16))
-    
+
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -220,24 +224,24 @@ def open_box(request, box_id):
     )
     qr.add_data(key)
     qr.make(fit=True)
-    
+
     img = qr.make_image(fill_color="black", back_color="white")
-    
+
     buffer = BytesIO()
     img.save(buffer, format="PNG")
     qr_image = buffer.getvalue()
     qr_base64 = base64.b64encode(qr_image).decode('utf-8')
 
     order = Order.objects.filter(box=box, storage_user=request.user).first()
-    
+
     if request.method == 'POST':
         if 'open_box' in request.POST:
             pass
-            
+
         elif 'confirm_delivery' in request.POST:
             delivery = request.POST.get('delivery') == 'on'
             address = request.POST.get('address', '') if delivery else None
-            
+
             if delivery and not address:
                 messages.error(request, "Пожалуйста, укажите адрес доставки")
             else:
@@ -251,24 +255,26 @@ def open_box(request, box_id):
                         address=address,
                         status='Доставка' if delivery else 'В процессе'
                     )
-                    messages.success(request, "Заказ на доставку успешно оформлен!")
+                    messages.success(
+                        request, "Заказ на доставку успешно оформлен!")
                 else:
                     order.delivery = delivery
                     order.address = address
                     if delivery:
                         order.status = 'Доставка'
                     order.save()
-                    messages.success(request, "Информация о доставке обновлена!")
-                
+                    messages.success(
+                        request, "Информация о доставке обновлена!")
+
                 return redirect('my_rent')
-    
+
     if order and order.end_rental_date:
         delta = order.end_rental_date - timezone.now().date()
         days_left = delta.days
         time_left = f"Осталось {days_left} дней" if days_left > 0 else "Срок аренды истёк"
     else:
         time_left = ""
-    
+
     return render(request, 'open_box.html', {
         'qr_image': qr_base64,
         'box': box,

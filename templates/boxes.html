@@ -186,7 +186,6 @@
 					</div>
 				</div>
 			</aside>
-		<!-- In your modal section -->
 			<aside class="modal fade" id="ConsentModalregistration" tabindex="-1" aria-labelledby="ConsentModalLabel" aria-hidden="true">
 				<div class="modal-dialog modal-dialog-centered">
 					<div class="modal-content">
@@ -199,7 +198,6 @@
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#ConsentModaldelivery">Да</button>
-							<!-- Use the first available box ID from the current storage -->
 							{% with storage.boxes.first as first_box %}
 								{% if first_box %}
 									<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="window.location.href='{% url 'rent_box' first_box.id %}'">Нет</button>
