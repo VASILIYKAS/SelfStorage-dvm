@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-&-mq6wuifda369zf5w1hl6z^@8=v*x=c_evdd$m-o-q!uh!)8-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["storage.azamat21x.space", "localhost"]
+ALLOWED_HOSTS = ["storage.azamat21x.space", "localhost", "127.0.0.1"]
 
 
 # Application definition
