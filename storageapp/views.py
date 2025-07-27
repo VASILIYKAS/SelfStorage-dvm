@@ -9,7 +9,13 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from phonenumber_field.phonenumber import PhoneNumber
+from io import BytesIO
 import phonenumbers
+import random
+import string
+import qrcode
+import base64
+
 
 from .models import StorageUser, Storage, Box, Order
 
@@ -197,6 +203,79 @@ def update_profile(request):
             return redirect("my_rent")
 
     return redirect("my_rent")
+
+
+@login_required
+def open_box(request, box_id):
+    box = Box.objects.get(id=box_id, user=request.user)
+    
+    alphabet = string.ascii_letters + string.digits
+    key = ''.join(random.choice(alphabet) for _ in range(16))
+    
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(key)
+    qr.make(fit=True)
+    
+    img = qr.make_image(fill_color="black", back_color="white")
+    
+    buffer = BytesIO()
+    img.save(buffer, format="PNG")
+    qr_image = buffer.getvalue()
+    qr_base64 = base64.b64encode(qr_image).decode('utf-8')
+
+    order = Order.objects.filter(box=box, storage_user=request.user).first()
+    
+    if request.method == 'POST':
+        if 'open_box' in request.POST:
+            pass
+            
+        elif 'confirm_delivery' in request.POST:
+            delivery = request.POST.get('delivery') == 'on'
+            address = request.POST.get('address', '') if delivery else None
+            
+            if delivery and not address:
+                messages.error(request, "Пожалуйста, укажите адрес доставки")
+            else:
+                if not order:
+                    order = Order.objects.create(
+                        storage_user=request.user,
+                        box=box,
+                        rental_start_date=timezone.now(),
+                        end_rental_date=timezone.now() + timedelta(days=30),
+                        delivery=delivery,
+                        address=address,
+                        status='Доставка' if delivery else 'В процессе'
+                    )
+                    messages.success(request, "Заказ на доставку успешно оформлен!")
+                else:
+                    order.delivery = delivery
+                    order.address = address
+                    if delivery:
+                        order.status = 'Доставка'
+                    order.save()
+                    messages.success(request, "Информация о доставке обновлена!")
+                
+                return redirect('my_rent')
+    
+    if order and order.end_rental_date:
+        delta = order.end_rental_date - timezone.now().date()
+        days_left = delta.days
+        time_left = f"Осталось {days_left} дней" if days_left > 0 else "Срок аренды истёк"
+    else:
+        time_left = ""
+    
+    return render(request, 'open_box.html', {
+        'qr_image': qr_base64,
+        'box': box,
+        'order': order,
+        'time_left': time_left,
+        'current_date': timezone.now().date()
+    })
 
 
 def logout_user(request):

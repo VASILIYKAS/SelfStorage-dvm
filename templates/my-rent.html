@@ -3,6 +3,7 @@
 
 {% block title %}My rent{% endblock %}
 {% block content %}
+
 <main class="container mt-header">
 	<div class="row" role="tablist">
 		<div class="col-lg-3 d-flex flex-column nav nav-pills">
@@ -99,10 +100,13 @@
 								<div>
 									<button class="btn fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_green SelfStorage__btn2_green mb-3">Продлить аренду</button>
 								</div>
-								<div>
-									<button class="btn fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_orange SelfStorage__btn2_orange mb-3">Открыть бокс</button>
-								</div>
-								<a href="#" class="SelfStorage_orange">Нужна помощь?</a>
+								<form action="{% url 'open_box' box_id=box.id %}" method="POST">
+									{% csrf_token %}
+									<div>
+										<button type="submit" name="open_box" class="btn fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_orange SelfStorage__btn2_orange mb-3">Открыть бокс</button>
+									</div>
+								</form>
+								<!-- <a href="#" class="SelfStorage_orange">Нужна помощь?</a> -->
 							</div>
 						{% endfor %}
 					{% endif %}

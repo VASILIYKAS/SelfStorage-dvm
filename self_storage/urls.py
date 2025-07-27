@@ -16,6 +16,7 @@ urlpatterns = [
     path('update-profile/', views.update_profile, name='update_profile'),
     path('logout/', views.logout_user, name='logout'),
     path('rent-box/<int:box_id>/', views.confirm_rental, name='rent_box'),
+    path('open-box/<int:box_id>/', views.open_box, name='open_box'),
 ]
 
 if settings.DEBUG:
