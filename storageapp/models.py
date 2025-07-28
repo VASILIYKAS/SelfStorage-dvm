@@ -134,7 +134,8 @@ class Order(models.Model):
         verbose_name='Дата окончания заказа'
     )
     delivery = models.BooleanField(
-        default=False
+        default=False,
+        verbose_name='доставка'
     )
 
     rental_price = models.DecimalField(

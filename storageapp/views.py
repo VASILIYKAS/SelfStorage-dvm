@@ -163,7 +163,7 @@ def confirm_rental(request, box_id):
             try:
                 discount = Discount.objects.get(promo_code=promo_code)
                 discounted_price = box.price * (100 - discount.discount_percent) / 100
-                promo_code_availability=True
+                promo_code_availability = True
 
                 box.price_with_discount = discounted_price
                 box.save()
