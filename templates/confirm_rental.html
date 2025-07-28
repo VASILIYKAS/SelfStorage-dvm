@@ -8,7 +8,13 @@
     <p>Вы собираетесь арендовать бокс №{{ box.number }}</p>
     <p>Размер: {{ box.length }} x {{ box.width }} x {{ box.height }} м</p>
     <p>Площадь: {{ box.area }} м²</p>
-    <p>Цена: {{ box.price }} ₽/месяц</p>
+    <p>Цена:
+        {% if discounted_price and discounted_price != box.price %}
+            <s>{{ box.price }} ₽</s> {{ discounted_price }} ₽
+        {% else %}
+            {{ box.price }} ₽
+        {% endif %}
+    </p>
     <p>Адрес бокса: {{ box.storage.adress }}, {{ box.storage.location }}</p>
 
     <p style="color: gray;">*Примечание: Доставщик замерит габариты Ваших вещей, либо их замерят при приёме на склад</p>
@@ -16,6 +22,21 @@
     
     <form method="POST">
         {% csrf_token %}
+
+
+        <div class="block_promo">
+            <input type="text" name="promo_code" placeholder="Введите промокод">
+            <button type="submit" name="apply_promo_code" class="btn btn-primary">Применить</button>
+        </div>
+        
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert {{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+
+
+
         <div class="form-check mb-3">
             <input class="form-check-input"  type="checkbox" id="self_delivery" name="self_delivery">
             <label class="form-check-label" for="self_delivery">
@@ -27,6 +48,10 @@
             <label for="address" class="form-label">Адрес для доставки</label>
             <textarea class="form-control" id="address" name="address" rows="3"></textarea>
         </div>
+
+        {% if current_promo_code %}
+            <input type="hidden" name="applied_promo_code" value="{{ current_promo_code }}">
+        {% endif %}
         
         <button type="submit" class="btn btn-primary">Подтвердить аренду</button>
         <a href="{% url 'boxes' %}" class="btn btn-secondary">Отмена</a>

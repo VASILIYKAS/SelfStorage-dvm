@@ -17,7 +17,7 @@ import qrcode
 import base64
 
 
-from .models import StorageUser, Storage, Box, Order
+from .models import StorageUser, Storage, Box, Order, Discount
 
 
 def is_worker(user):
@@ -120,6 +120,36 @@ def confirm_rental(request, box_id):
         messages.error(request, "Этот бокс уже занят или не существует")
         return redirect('boxes')
 
+    discounted_price = box.price
+    current_promo_code = ''
+    promo_code_availability = False
+    
+    
+    if request.method == 'POST' and 'apply_promo_code' in request.POST:
+        promo_code = request.POST.get('promo_code')
+
+        try:
+            discount = Discount.objects.get(
+                promo_code=promo_code
+                )
+            discounted_price = box.price * (100 - discount.discount_percent) / 100
+            current_promo_code = promo_code
+            messages.success(request, f"Применён промокод: {promo_code}")
+
+        except Discount.DoesNotExist:
+            messages.error(request, "Неверный промокод или срок действия истёк")
+
+        return render(
+            request,
+            'confirm_rental.html',
+            {
+                'box': box,
+                'discounted_price': discounted_price,
+                'current_promo_code': current_promo_code
+            }
+        )
+
+
     if request.method == 'POST':
         box.user = request.user
         box.save()
@@ -128,12 +158,29 @@ def confirm_rental(request, box_id):
         address = request.POST.get(
             'address', '') if not delivery else None
 
+        promo_code = request.POST.get('applied_promo_code')
+        if promo_code:
+            try:
+                discount = Discount.objects.get(promo_code=promo_code)
+                discounted_price = box.price * (100 - discount.discount_percent) / 100
+                promo_code_availability = True
+
+                box.price_with_discount = discounted_price
+                box.save()
+
+            except Discount.DoesNotExist:
+                discounted_price = box.price 
+        else:
+            discounted_price = box.price
+
         Order.objects.create(
             storage_user=request.user,
             box=box,
             rental_start_date=timezone.now(),
             end_rental_date=timezone.now() + timedelta(days=30),
             delivery=delivery,
+            rental_price=discounted_price,
+            promo_code_availability=promo_code_availability,
             address=address
         )
 
