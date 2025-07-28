@@ -137,6 +137,19 @@ class Order(models.Model):
         default=False
     )
 
+    rental_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        verbose_name='Цена аренды',
+        null=True,
+        blank=True
+    )
+
+    promo_code_availability = models.BooleanField(
+        default=False,
+        verbose_name='наличие промокода'
+    )
+
     storage_user = models.ForeignKey(
         StorageUser,
         on_delete=models.CASCADE,
@@ -189,6 +202,16 @@ class Box(models.Model):
         decimal_places=2,
         verbose_name='Цена'
     )
+
+    price_with_discount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        verbose_name='Цена cо скидкой',
+        null=True,
+        blank=True
+    )
+
+
     user = models.ForeignKey(
         StorageUser,
         on_delete=models.SET_NULL,
@@ -250,3 +273,30 @@ class UserItem(models.Model):
 
     def __str__(self):
         return f'Вещи клиента {self.user}'
+
+
+class Discount(models.Model):
+    promo_code = models.CharField(
+        verbose_name='промокод'
+    )
+    discount_percent = models.IntegerField(
+        verbose_name='процент скидки'
+    )
+    discount_start_date = models.DateField(
+        verbose_name='дата начала скидки'
+    )
+    discount_end_date = models.DateField(
+        verbose_name='дата конца скидки'
+    )
+
+    orders = models.ForeignKey(
+        Order,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        verbose_name='Заказ со скидкой',
+        related_name='discounts'
+    )
+
+    def __str__(self):
+        return f'{self.promo_code}'

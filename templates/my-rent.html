@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-
+order
 {% block title %}My rent{% endblock %}
 {% block content %}
 
@@ -89,7 +89,11 @@
 								<h4 class="SelfStorage_green">Характеристики бокса</h4>
 								<h4>{{ box.area }} м² ({{ box.length }} х {{ box.width }} х {{ box.height }} м)</h4>
 								<h4 class="SelfStorage_green">Цена</h4>
-								<h4>{{ box.price }} ₽/мес</h4>
+                                  {% if box.price_with_discount %}
+                                    <h4>{{ box.price_with_discount }} ₽/мес (со скидкой)</h4>
+                                  {% else %}
+								    <h4>{{ box.price }} ₽/мес</h4>
+                                  {% endif %}
 								
 								{% for order in user_orders %}
 									{% if order.box == box %}

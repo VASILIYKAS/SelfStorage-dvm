@@ -1,7 +1,7 @@
 # admin.py
 from django.contrib import admin
 from adminsortable2.admin import SortableStackedInline
-from storageapp.models import Storage, StorageUser, Box, UserItem, Order
+from storageapp.models import Storage, StorageUser, Box, UserItem, Order, Discount
 
 
 @admin.register(StorageUser)
@@ -61,7 +61,7 @@ class OrderAdmin(admin.ModelAdmin):
         'rental_start_date',
         'end_rental_date'
     ]
-    list_filter = ['status', 'rental_start_date']
+    list_filter = ['status', 'rental_start_date', 'promo_code_availability']
     search_fields = [
         'storage_user__email',
         'storage_user__phone_number',
@@ -77,7 +77,7 @@ class OrderAdmin(admin.ModelAdmin):
 
     def delete_model(self, request, obj):
         if obj.box:
-            obj.box.user = None
+            objaddress.box.user = None
             obj.box.save()
         super().delete_model(request, obj)
 
@@ -91,3 +91,9 @@ class UserItemAdmin(admin.ModelAdmin):
         'height'
     ]
     search_fields = ['user__email', 'boxes__number']
+
+
+@admin.register(Discount)
+class DiscountAdmin(admin.ModelAdmin):
+    pass
+
