@@ -1,11 +1,8 @@
 # admin.py
 from django.contrib import admin
 from adminsortable2.admin import SortableStackedInline
-<<<<<<< HEAD
-from storageapp.models import Storage, StorageUser, Box, UserItem, Order, Discount
-=======
-from storageapp.models import Storage, StorageUser, Box, UserItem, Order, SentNotification
->>>>>>> 5572b667f597c8a0f9bfa948465e4440642ebf8d
+from storageapp.models import Storage, StorageUser, Box, UserItem, Order, SentNotification, Discount
+
 
 
 @admin.register(StorageUser)

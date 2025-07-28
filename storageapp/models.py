@@ -300,7 +300,8 @@ class Discount(models.Model):
 
     def __str__(self):
         return f'{self.promo_code}'
-=======
+
+
 class SentNotification(models.Model):
     NOTIFICATION_TYPES = [
         ('1_month', 'За 1 месяц'),
