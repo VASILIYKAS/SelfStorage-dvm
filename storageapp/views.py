@@ -70,15 +70,21 @@ def index(request):
 
 
 def boxes(request):
+    storage_id = request.GET.get('storage_id')
 
     storages = Storage.objects.annotate(
-        min_price=Min('boxes__price', filter=Q(boxes__user__isnull=True))
-    )
+        min_price=Min('boxes__price', filter=Q(boxes__user__isnull=True)),
+        available_count=Count('boxes', filter=Q(boxes__user__isnull=True))
+    ).all()
 
-    boxes = Box.objects.filter(user__isnull=True)
-    boxes_to3 = boxes.filter(area__lte=3)
-    boxes_to10 = boxes.filter(area__gt=3, area__lte=10)
-    boxes_from10 = boxes.filter(area__gt=10)
+    boxes_query = Box.objects.filter(user__isnull=True)
+    if storage_id:
+        boxes_query = boxes_query.filter(storage_id=storage_id)
+
+    boxes = boxes_query.all()
+    boxes_to3 = boxes_query.filter(area__lte=3)
+    boxes_to10 = boxes_query.filter(area__gt=3, area__lte=10)
+    boxes_from10 = boxes_query.filter(area__gt=10)
 
     return render(request, 'boxes.html', {
         'storages': storages,
@@ -86,6 +92,7 @@ def boxes(request):
         'boxes_to3': boxes_to3,
         'boxes_to10': boxes_to10,
         'boxes_from10': boxes_from10,
+        'current_storage_id': int(storage_id) if storage_id else None,
     })
 
 
@@ -124,21 +131,23 @@ def confirm_rental(request, box_id):
     current_promo_code = ''
     promo_code_availability = False
     applied_discount = None
-    
+
     if request.method == 'POST' and 'apply_promo_code' in request.POST:
         promo_code = request.POST.get('promo_code')
 
         try:
             discount = Discount.objects.get(
                 promo_code=promo_code
-                )
-            discounted_price = box.price * (100 - discount.discount_percent) / 100
+            )
+            discounted_price = box.price * \
+                (100 - discount.discount_percent) / 100
             current_promo_code = promo_code
             applied_discount = discount
             messages.success(request, f"Применён промокод: {promo_code}")
 
         except Discount.DoesNotExist:
-            messages.error(request, "Неверный промокод или срок действия истёк")
+            messages.error(
+                request, "Неверный промокод или срок действия истёк")
 
         return render(
             request,
@@ -149,7 +158,6 @@ def confirm_rental(request, box_id):
                 'current_promo_code': current_promo_code
             }
         )
-
 
     if request.method == 'POST':
         box.user = request.user
@@ -163,7 +171,8 @@ def confirm_rental(request, box_id):
         if promo_code:
             try:
                 discount = Discount.objects.get(promo_code=promo_code)
-                discounted_price = box.price * (100 - discount.discount_percent) / 100
+                discounted_price = box.price * \
+                    (100 - discount.discount_percent) / 100
                 promo_code_availability = True
                 applied_discount = discount
 
@@ -171,7 +180,7 @@ def confirm_rental(request, box_id):
                 box.save()
 
             except Discount.DoesNotExist:
-                discounted_price = box.price 
+                discounted_price = box.price
         else:
             discounted_price = box.price
 
@@ -188,7 +197,7 @@ def confirm_rental(request, box_id):
 
         if applied_discount:
             order.discounts.add(applied_discount)
-            
+
         messages.success(request, "Бокс успешно арендован!")
         return redirect('my_rent')
 

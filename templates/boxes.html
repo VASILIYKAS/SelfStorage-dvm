@@ -35,11 +35,17 @@
 							<h6 class="text-center">{{ storage.adress }}</h6>
 						</div>
 						<div class="col-12 col-md-4 col-lg-3 d-flex flex-column justify-content-center">
-							<h4 class="text-center">{{ storage.available_boxes_count }} из {{ storage.total_boxes_count }}</h4>
-							<h6 class="text-center">Боксов свободно</h6>
+							<h4 class="text-center">{{ storage.available_count }} из {{ storage.total_boxes_count }}</h4>
+							<h6 class="text-center">Боксов свободно</h6>>
 						</div>
 						<div class="col-12 col-md-4 col-lg-3 d-flex flex-column justify-content-center">
-							<h4 class="text-center SelfStorage_green">от {{ storage.boxes.first.price }} ₽</h4> 
+							<h4 class="text-center SelfStorage_green">
+								{% if storage.available_count > 0 %}
+									от {{ storage.min_price|default:"Не определено" }} ₽
+								{% else %}
+									Нет свободных боксов
+								{% endif %}
+							</h4>
 							<h6 class="text-center">{{ storage.features }}</h6>
 						</div>
 					</a>
@@ -122,7 +128,7 @@
 							<div class="col-6 d-flex flex-column align-items-center align-items-lg-start">
 								<span class="fs_30 fw-bold SelfStorage_orange">до {{ storage.height }} м</span>
 								<span class="SelfStorage_grey mb-3">Высота потолка</span>
-								<span class="fs_30 fw-bold SelfStorage_orange">от {{ storage.min_price }} ₽</span>
+								<span class="fs_30 fw-bold SelfStorage_orange">{{ storage.min_price|default:"Не определено" }} ₽</span>
 								<span class="SelfStorage_grey mb-3">Оплата за месяц</span>
 							</div>
 							<div class="d-flex flex-column align-items-center align-items-lg-start">
@@ -286,7 +292,13 @@
 				</a>
 				{% endfor %}
 				{% else %}
-				    <div style="padding-left: 400px;" class="SelfStorage_green">Все боксы сейчас заняты, попробуйте зайти позже.</div>
+					<div style="padding-left: 400px;" class="SelfStorage_green">
+						{% if current_storage_id %}
+							На этом складе нет свободных боксов
+						{% else %}
+							Все боксы сейчас заняты, попробуйте зайти позже.
+						{% endif %}
+					</div>
 				{% endif %}
 				<div class="d-flex justify-content-center mt-5">
 					<button class="btn w-auto py-3 px-5 SelfStorage__bg_orange SelfStorage__btn2_orange text-white text-center fs_24 border-8" id="btn-collapse-all" data-bs-toggle="collapse" data-bs-target="#collapse-all" aria-expanded="false" aria-controls="collapse-all">Другие боксы</button>
@@ -369,5 +381,19 @@
 			</div>
 		</div>
 	</article>
+	<script>
+
+		document.addEventListener('DOMContentLoaded', function() {
+			const urlParams = new URLSearchParams(window.location.search);
+			const storageId = urlParams.get('storage_id');
+			
+			if (storageId) {
+				const tabElement = document.getElementById(`pills-${storageId}-tab`);
+				if (tabElement) {
+					new bootstrap.Tab(tabElement).show();
+				}
+			}
+		});
+	</script>
 </main>
 {% endblock %}
