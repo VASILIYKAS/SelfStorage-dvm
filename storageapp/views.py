@@ -1,11 +1,10 @@
 from datetime import timedelta
 from django.utils import timezone
-from .models import Storage, Box, Order
-from .models import StorageUser
+from .models import Storage, Box, Order, StorageUser, UserItem
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from phonenumber_field.phonenumber import PhoneNumber
@@ -213,6 +212,8 @@ def update_profile(request):
 def open_box(request, box_id):
     box = Box.objects.get(id=box_id, user=request.user)
 
+    user_items = UserItem.objects.filter(boxes=box)
+
     alphabet = string.ascii_letters + string.digits
     key = ''.join(random.choice(alphabet) for _ in range(16))
 
@@ -265,8 +266,22 @@ def open_box(request, box_id):
                     order.save()
                     messages.success(
                         request, "Информация о доставке обновлена!")
-
                 return redirect('my_rent')
+
+        elif 'add_item' in request.POST:
+            items_description = request.POST.get('items_description', '')
+            if items_description:
+                UserItem.objects.create(
+                    boxes=box,
+                    user=request.user,
+                    area=box.area,
+                    length=box.length,
+                    width=box.width,
+                    height=box.height,
+                    items=items_description
+                )
+                messages.success(request, "Вещь успешно добавлена!")
+            return redirect('open_box', box_id=box.id)
 
     if order and order.end_rental_date:
         delta = order.end_rental_date - timezone.now().date()
@@ -280,7 +295,41 @@ def open_box(request, box_id):
         'box': box,
         'order': order,
         'time_left': time_left,
-        'current_date': timezone.now().date()
+        'current_date': timezone.now().date(),
+        'user_items': user_items
+    })
+
+
+@login_required
+def my_items(request):
+    user_boxes = Box.objects.filter(
+        user=request.user).select_related('storage')
+    user_items = UserItem.objects.filter(
+        boxes__in=user_boxes).select_related('boxes', 'boxes__storage')
+
+    if request.method == 'POST' and 'add_item' in request.POST:
+        box_id = request.POST.get('box')
+        items_description = request.POST.get('items_description', '')
+
+        try:
+            box = Box.objects.get(id=box_id, user=request.user)
+            UserItem.objects.create(
+                boxes=box,
+                user=request.user,
+                area=box.area,
+                length=box.length,
+                width=box.width,
+                height=box.height,
+                items=items_description
+            )
+            messages.success(request, "Вещь успешно добавлена!")
+            return redirect('my_items')
+        except Box.DoesNotExist:
+            messages.error(request, "Выбранный бокс не найден")
+
+    return render(request, 'my-items.html', {
+        'user_items': user_items,
+        'user_boxes': user_boxes
     })
 
 

@@ -17,6 +17,8 @@ urlpatterns = [
     path('logout/', views.logout_user, name='logout'),
     path('rent-box/<int:box_id>/', views.confirm_rental, name='rent_box'),
     path('open-box/<int:box_id>/', views.open_box, name='open_box'),
+    path('my-items/', views.my_items, name='my_items'),
+    path('my-items/<int:box_id>/', views.my_items, name='my_items_box'),
 ]
 
 if settings.DEBUG:
