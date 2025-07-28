@@ -86,7 +86,7 @@ def send_email_notification(order, days_left):
         msg.set_content(templates[0])
 
     with smtplib.SMTP_SSL('smtp.yandex.ru', 465) as server:
-        server.login('v.casianow2009@yandex.ru', os.getenv('YANDEX_PASSWORD'))
+        server.login(os.getenv('YANDEX_MAIL'), os.getenv('YANDEX_PASSWORD'))
         server.send_message(msg)
 
 def check_and_send_notifications():
