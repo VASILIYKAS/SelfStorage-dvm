@@ -43,7 +43,7 @@ def send_email_notification(order, days_left):
     box_number = order.box.number
     user_email = order.storage_user.email
     final_date = (order.end_rental_date + timedelta(days=180)).strftime('%d.%m.%Y')
-    site_url = 'www.nash-site.ru'
+    site_url = 'http://storage.azamat21x.space/'
 
     templates = {
         30: f"""Уважаемый {user_name},
