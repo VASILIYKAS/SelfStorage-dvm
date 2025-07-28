@@ -78,7 +78,11 @@
 							<div class="carousel-inner">
 								<div class="carousel-item active">
 									<div class="d-flex flex-column align-items-center">
-										<img src="{{ storage.image.url }}" alt="">
+										{% if storage.image %}
+										    <img src="{{ storage.image.url }}" alt="">
+										{% else %}
+										    <img src="{% static 'img/image151.png' %}" alt="">  
+										{% endif %}
 									</div>
 								</div>
 								<div class="carousel-item">
