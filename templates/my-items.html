@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Items{% endblock %}
+{% block content %}
+
+<main class="container mt-header">
+    <div class="row" role="tablist">
+        <div class="col-lg-3 d-flex flex-column nav nav-pills">
+			<button class="ps-0 btn bg-white fs_24 shadow-none SelfStorage_orange SelfStorage_tab active" id="LK-tab" data-bs-toggle="pill" data-bs-target="#LK" type="button" role="tab" aria-controls="LK" aria-selected="true">Личный кабинет</button>
+			<button class="ps-0 btn bg-white fs_24 shadow-none SelfStorage_grey SelfStorage_tab" id="Rent-tab" data-bs-toggle="pill" data-bs-target="#Rent" type="button" role="tab" aria-controls="Rent" aria-selected="false">Моя аренда</button>
+			<a href="{% url 'faq' %}" class="btn fs_24 shadow-none text-decoration-none SelfStorage_grey SelfStorage_tab">FAQ</a>
+			<a href="{% url 'my_items' %}" class="btn fs_24 shadow-none text-decoration-none SelfStorage_grey SelfStorage_tab">Мои вещи</a>
+			<a href="{% url 'logout' %}" class="btn fs_24 shadow-none text-decoration-none SelfStorage_grey SelfStorage_tab">Выйти</a>
+		</div>
+        <div class="col-lg-9">
+            <div class="card p-5">
+                <div class="d-flex justify-content-between align-items-center mb-5">
+                    <h1 class="fw-bold SelfStorage_green mb-0">Мои вещи</h1>
+                    <button class="btn fs_24 px-5 py-3 text-white border-8 SelfStorage__bg_green SelfStorage__btn2_orange" 
+                            data-bs-toggle="collapse" data-bs-target="#addItemForm">
+                        Добавить вещь
+                    </button>
+                </div>
+                
+                <div class="collapse mb-5" id="addItemForm">
+                    <div class="card card-body">
+                        <form method="POST" action="{% url 'my_items' %}">
+                            {% csrf_token %}
+                            <h4 class="SelfStorage_green mb-3">Добавить новую вещь</h4>
+                            
+                            <div class="mb-3">
+                                <label class="form-label SelfStorage_green">Выберите бокс</label>
+                                <select name="box" class="form-select" required>
+                                    {% for box in user_boxes %}
+                                        <option value="{{ box.id }}">№{{ box.number }} ({{ box.storage.location }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label SelfStorage_green">Описание вещи</label>
+                                <textarea name="items_description" class="form-control" rows="3" required 
+                                          placeholder="Опишите что вы храните"></textarea>
+                            </div>
+                            
+                            <button type="submit" name="add_item" class="btn SelfStorage__bg_green text-white">
+                                Сохранить
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                {% if not user_items %}
+                    <h4 class="SelfStorage_grey my-3">У вас пока нет вещей на хранении.</h4>
+                {% else %}
+                    {% for item in user_items %}
+                        <div class="mb-5 border-bottom pb-3">
+                            <h4 class="SelfStorage_green">Бокс</h4>
+                            <h4>№{{ item.boxes.number }} ({{ item.boxes.storage.location }})</h4>
+                            <h4 class="SelfStorage_green mt-3">Описание вещей</h4>
+                            <h4>{{ item.items|default:"Не указано" }}</h4>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

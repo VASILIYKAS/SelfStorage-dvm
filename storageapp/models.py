@@ -235,7 +235,7 @@ class UserItem(models.Model):
         related_name='user_items',
         verbose_name='Вещи Клиента'
     )
-    boxes = models.OneToOneField(
+    boxes = models.ForeignKey(
         Box,
         on_delete=models.CASCADE,
         related_name='box_items',

@@ -68,6 +68,19 @@ class OrderAdmin(admin.ModelAdmin):
         'box__number'
     ]
 
+    def delete_queryset(self, request, queryset):
+        for order in queryset:
+            if order.box:
+                order.box.user = None
+                order.box.save()
+        super().delete_queryset(request, queryset)
+
+    def delete_model(self, request, obj):
+        if obj.box:
+            obj.box.user = None
+            obj.box.save()
+        super().delete_model(request, obj)
+
 
 @admin.register(UserItem)
 class UserItemAdmin(admin.ModelAdmin):

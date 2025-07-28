@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Worker Orders{% endblock %}
+{% block content %}
+
+<main class="container mt-header">
+    <h1 class="fw-bold SelfStorage_green mb-5">Ваши заказы</h1>
+    <div class="col-lg-3 d-flex flex-column nav nav-pills">
+
+        <a href="{% url 'worker_orders' %}" class="btn fs_24 shadow-none text-decoration-none SelfStorage_grey SelfStorage_tab">
+            Заказы
+        </a>
+				
+    </div>
+    <div class="card p-5">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Пользователь</th>
+                    <th>Номер тел.</th>
+                    <th>Бокс</th>
+                    <th>Даты</th>
+                    <th>Статус</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.storage_user.get_full_name }}</td>
+                    <td>{{ order.storage_user.phone_number }}</td>
+                    <td>
+                        {% if order.box %}
+                            {{ order.box.storage.location }}, Box {{ order.box.number }}
+                        {% else %}
+                            Пока нет заказов :)
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ order.rental_start_date|date:"d.m.Y" }} - 
+                        {{ order.end_rental_date|date:"d.m.Y" }}
+                    </td>
+                    <td>{{ order.status }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">Нет заказов :)</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+
+{% endblock %}

@@ -28,7 +28,11 @@
 				<li class="nav-item flex-grow-1 mx-1" role="presentation">
 					<a href="#BOX" class="row text-decoration-none py-3 px-4 mt-5 SelfStorage__boxlink" id="pills-{{ storage.id }}-tab" data-bs-toggle="pill" data-bs-target="#pills-{{ storage.id }}" role="tab" aria-controls="pills-{{ storage.id }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
 						<div style="width: 150x; height: 150px;" class="col-12 col-lg-3 d-flex justify-content-center">
-							<img src="{% if storage.image %}{{ storage.image.url }}{% else %}{% static 'img/image11.jpg' %}{% endif %}" alt="" class="mb-3 mb-lg-0">
+							{% if storage.image %}
+								<img src="{{ storage.image.url }}" alt="" class="mb-3 mb-lg-0">
+							{% else %}
+								<img src="{% static 'img/image11.png' %}" alt="" class="mb-3 mb-lg-0">  
+							{% endif %}
 						</div>
 						<div id="choice_boxes" class="col-12 col-md-4 col-lg-3 d-flex flex-column justify-content-center">
 							<h4 class="text-center">{{ storage.location }}</h4>
@@ -78,12 +82,20 @@
 							<div class="carousel-inner">
 								<div class="carousel-item active">
 									<div class="d-flex flex-column align-items-center">
-										<img src="{{ storage.image.url }}" alt="">
+										{% if storage.image %}
+										    <img src="{{ storage.image.url }}" alt="">
+										{% else %}
+										    <img src="{% static 'img/image2.png' %}" alt="">  
+										{% endif %}
 									</div>
 								</div>
 								<div class="carousel-item">
 									<div class="d-flex flex-column align-items-center">
-										<img src="{{ storage.image.url }}" alt="">
+										{% if storage.image %}
+										    <img src="{{ storage.image.url }}" alt="">
+										{% else %}
+										    <img src="{% static 'img/image2.png' %}" alt="">  
+										{% endif %}
 									</div>
 								</div>
 							</div>
@@ -186,7 +198,6 @@
 					</div>
 				</div>
 			</aside>
-		<!-- In your modal section -->
 			<aside class="modal fade" id="ConsentModalregistration" tabindex="-1" aria-labelledby="ConsentModalLabel" aria-hidden="true">
 				<div class="modal-dialog modal-dialog-centered">
 					<div class="modal-content">
@@ -199,7 +210,6 @@
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#ConsentModaldelivery">Да</button>
-							<!-- Use the first available box ID from the current storage -->
 							{% with storage.boxes.first as first_box %}
 								{% if first_box %}
 									<button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="window.location.href='{% url 'rent_box' first_box.id %}'">Нет</button>
@@ -275,7 +285,7 @@
 						<span class="fs_24">{{ box.length }} х {{ box.width }} х {{ box.height }} м</span>
 					</div>
 					<div class="col-12 col-lg-3">
-						<span class="btn my-2 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange border-8">От {{ box.price }} ₽</span>
+						<span class="btn my-2 w-100 text-white fs_24 SelfStorage__bg_orange SelfStorage__btn2_orange border-8">От {{ Storage.box.price }} ₽</span>
 					</div>
 				</a>
 				{% endfor %}
