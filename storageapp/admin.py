@@ -1,6 +1,6 @@
 # admin.py
 from django.contrib import admin
-from storageapp.models import Storage, StorageUser, Box, UserItem, Order, SentNotification
+from storageapp.models import Storage, StorageUser, Box, UserItem, Order, SentNotification, Discount
 
 
 @admin.register(StorageUser)
@@ -58,11 +58,12 @@ class OrderAdmin(admin.ModelAdmin):
         'box',
         'status',
         'rental_start_date',
-        'end_rental_date'
+        'end_rental_date',
     ]
     list_filter = [
         'status',
         'rental_start_date',
+        'discounts__promo_code',
     ]
     search_fields = [
         'storage_user__email',
@@ -79,7 +80,7 @@ class OrderAdmin(admin.ModelAdmin):
 
     def delete_model(self, request, obj):
         if obj.box:
-            objaddress.box.user = None
+            obj.box.user = None
             obj.box.save()
         super().delete_model(request, obj)
 
@@ -105,4 +106,9 @@ class SentNotificationAdmin(admin.ModelAdmin):
     def user_email(self, obj):
         return obj.order.storage_user.email
     user_email.short_description = 'Email пользователя'
+    
+    
+@admin.register(Discount)
+class DiscountAdmin(admin.ModelAdmin):
+    pass
 

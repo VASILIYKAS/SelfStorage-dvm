@@ -123,7 +123,7 @@ def confirm_rental(request, box_id):
     discounted_price = box.price
     current_promo_code = ''
     promo_code_availability = False
-    
+    applied_discount = None
     
     if request.method == 'POST' and 'apply_promo_code' in request.POST:
         promo_code = request.POST.get('promo_code')
@@ -134,6 +134,7 @@ def confirm_rental(request, box_id):
                 )
             discounted_price = box.price * (100 - discount.discount_percent) / 100
             current_promo_code = promo_code
+            applied_discount = discount
             messages.success(request, f"Применён промокод: {promo_code}")
 
         except Discount.DoesNotExist:
@@ -164,6 +165,7 @@ def confirm_rental(request, box_id):
                 discount = Discount.objects.get(promo_code=promo_code)
                 discounted_price = box.price * (100 - discount.discount_percent) / 100
                 promo_code_availability = True
+                applied_discount = discount
 
                 box.price_with_discount = discounted_price
                 box.save()
@@ -173,7 +175,7 @@ def confirm_rental(request, box_id):
         else:
             discounted_price = box.price
 
-        Order.objects.create(
+        order = Order.objects.create(
             storage_user=request.user,
             box=box,
             rental_start_date=timezone.now(),
@@ -184,6 +186,9 @@ def confirm_rental(request, box_id):
             address=address
         )
 
+        if applied_discount:
+            order.discounts.add(applied_discount)
+            
         messages.success(request, "Бокс успешно арендован!")
         return redirect('my_rent')
 
