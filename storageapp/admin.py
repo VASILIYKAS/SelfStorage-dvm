@@ -1,11 +1,12 @@
-# admin.py
 from django.contrib import admin
+from django.utils import timezone
 from storageapp.models import Storage, StorageUser, Box, UserItem, Order, SentNotification, Discount
+from django.contrib.admin import SimpleListFilter
 
 
 @admin.register(StorageUser)
 class StorageUserAdmin(admin.ModelAdmin):
-    search_fields = ['email', 'first_name', 'last_name', 'phone_number',]
+    search_fields = ['email', 'first_name', 'last_name', 'phone_number']
     list_display = [
         'first_name',
         'last_name',
@@ -50,6 +51,24 @@ class BoxAdmin(admin.ModelAdmin):
     search_fields = ['number', 'user__email']
 
 
+class ExpiredOrderFilter(SimpleListFilter):
+    title = 'Просрочен'  # Filter title in admin
+    parameter_name = 'is_expired'  # URL query parameter
+
+    def lookups(self, request, model_admin):
+        return (
+            ('yes', 'Просрочен'),
+            ('no', 'Не просрочен'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'yes':
+            return queryset.filter(end_rental_date__lt=timezone.now().date())
+        if self.value() == 'no':
+            return queryset.filter(end_rental_date__gte=timezone.now().date())
+        return queryset
+
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = [
@@ -59,17 +78,24 @@ class OrderAdmin(admin.ModelAdmin):
         'status',
         'rental_start_date',
         'end_rental_date',
+        'is_expired',
     ]
     list_filter = [
         'status',
         'rental_start_date',
         'discounts__promo_code',
+        ExpiredOrderFilter,
     ]
     search_fields = [
         'storage_user__email',
         'storage_user__phone_number',
         'box__number',
     ]
+
+    def is_expired(self, obj):
+        return obj.end_rental_date < timezone.now().date()
+    is_expired.boolean = True
+    is_expired.short_description = 'Просрочен'
 
     def delete_queryset(self, request, queryset):
         for order in queryset:
@@ -95,20 +121,19 @@ class UserItemAdmin(admin.ModelAdmin):
     ]
     search_fields = ['user__email', 'boxes__number']
 
-    
+
 @admin.register(SentNotification)
 class SentNotificationAdmin(admin.ModelAdmin):
     list_display = ('order', 'user_email', 'notification_type', 'sent_at')
     list_filter = ('notification_type', 'sent_at')
     search_fields = ('order__id', 'order__storage_user__email')
     readonly_fields = ('sent_at',)
-    
+
     def user_email(self, obj):
         return obj.order.storage_user.email
     user_email.short_description = 'Email пользователя'
-    
-    
+
+
 @admin.register(Discount)
 class DiscountAdmin(admin.ModelAdmin):
     pass
-
