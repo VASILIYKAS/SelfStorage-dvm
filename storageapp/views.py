@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponseRedirect
 from phonenumber_field.phonenumber import PhoneNumber
 from io import BytesIO
@@ -19,10 +19,20 @@ import base64
 from .models import StorageUser, Storage, Box, Order, Discount
 
 
+def is_worker(user):
+    return user.is_staff
+
+
+@user_passes_test(is_worker)
+def worker_orders(request):
+    orders = Order.objects.select_related(
+        'storage_user', 'box').all().order_by('-rental_start_date')
+    return render(request, 'worker_orders.html', {'orders': orders})
+
+
 def index(request):
     if request.method == 'POST':
         if request.user.is_authenticated:
-            # Юзать имейл юзера, если он уже в бд
             email = request.user.email
             request.session['user_email'] = email
             return HttpResponseRedirect('/boxes/#rent_boxes')
@@ -36,7 +46,26 @@ def index(request):
             else:
                 messages.error(request, "Пожалуйста, укажите ваш email")
                 return redirect('index')
-    return render(request, 'index.html')
+    storage = Storage.objects.first()
+    if storage:
+        total_boxes = Box.objects.filter(storage=storage).count()
+        available_boxes = Box.objects.filter(
+            storage=storage, user__isnull=True).count()
+        sample_box = Box.objects.filter(
+            storage=storage,
+            user__isnull=True
+        ).order_by('price').first()
+    else:
+        total_boxes = 0
+        available_boxes = 0
+        sample_box = None
+
+    return render(request, 'index.html', {
+        'storage': storage,
+        'total_boxes': total_boxes,
+        'available_boxes': available_boxes,
+        'sample_box': sample_box,
+    })
 
 
 def boxes(request):
