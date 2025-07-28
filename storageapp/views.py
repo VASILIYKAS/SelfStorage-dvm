@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponseRedirect
 from phonenumber_field.phonenumber import PhoneNumber
 from io import BytesIO
@@ -17,6 +17,17 @@ import base64
 
 
 from .models import StorageUser, Storage, Box, Order
+
+
+def is_worker(user):
+    return user.is_staff
+
+
+@user_passes_test(is_worker)
+def worker_orders(request):
+    orders = Order.objects.select_related(
+        'storage_user', 'box').all().order_by('-rental_start_date')
+    return render(request, 'worker_orders.html', {'orders': orders})
 
 
 def index(request):

@@ -19,6 +19,7 @@ urlpatterns = [
     path('open-box/<int:box_id>/', views.open_box, name='open_box'),
     path('my-items/', views.my_items, name='my_items'),
     path('my-items/<int:box_id>/', views.my_items, name='my_items_box'),
+    path('worker/orders/', views.worker_orders, name='worker_orders'),
 ]
 
 if settings.DEBUG:
