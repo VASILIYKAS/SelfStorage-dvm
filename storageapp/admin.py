@@ -1,12 +1,16 @@
 # admin.py
 from django.contrib import admin
 from adminsortable2.admin import SortableStackedInline
+<<<<<<< HEAD
 from storageapp.models import Storage, StorageUser, Box, UserItem, Order, Discount
+=======
+from storageapp.models import Storage, StorageUser, Box, UserItem, Order, SentNotification
+>>>>>>> 5572b667f597c8a0f9bfa948465e4440642ebf8d
 
 
 @admin.register(StorageUser)
 class StorageUserAdmin(admin.ModelAdmin):
-    search_fields = ['email', 'first_name', 'last_name', 'phone_number']
+    search_fields = ['email', 'first_name', 'last_name', 'phone_number',]
     list_display = [
         'first_name',
         'last_name',
@@ -96,4 +100,16 @@ class UserItemAdmin(admin.ModelAdmin):
 @admin.register(Discount)
 class DiscountAdmin(admin.ModelAdmin):
     pass
+
+    
+@admin.register(SentNotification)
+class SentNotificationAdmin(admin.ModelAdmin):
+    list_display = ('order', 'user_email', 'notification_type', 'sent_at')
+    list_filter = ('notification_type', 'sent_at')
+    search_fields = ('order__id', 'order__storage_user__email')
+    readonly_fields = ('sent_at',)
+    
+    def user_email(self, obj):
+        return obj.order.storage_user.email
+    user_email.short_description = 'Email пользователя'
 

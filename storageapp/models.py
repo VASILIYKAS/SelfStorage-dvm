@@ -300,3 +300,20 @@ class Discount(models.Model):
 
     def __str__(self):
         return f'{self.promo_code}'
+=======
+class SentNotification(models.Model):
+    NOTIFICATION_TYPES = [
+        ('1_month', 'За 1 месяц'),
+        ('2_weeks', 'За 2 недели'),
+        ('1_week', 'За 1 неделю'),
+        ('3_days', 'За 3 дня'),
+        ('expired', 'Просрочка'),
+    ]
+
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    notification_type = models.CharField(
+        max_length=10, choices=NOTIFICATION_TYPES)
+    sent_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('order', 'notification_type')

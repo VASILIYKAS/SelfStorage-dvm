@@ -1,6 +1,9 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
+
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -16,7 +19,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["storage.azamat21x.space", "localhost", "127.0.0.1"]
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -28,6 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'phonenumber_field',
     'storageapp',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [

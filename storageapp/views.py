@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponseRedirect
+from django.db.models import Q, Min, Count
 from phonenumber_field.phonenumber import PhoneNumber
 from io import BytesIO
 import phonenumbers
@@ -69,7 +70,11 @@ def index(request):
 
 
 def boxes(request):
-    storages = Storage.objects.all()
+
+    storages = Storage.objects.annotate(
+        min_price=Min('boxes__price', filter=Q(boxes__user__isnull=True))
+    )
+
     boxes = Box.objects.filter(user__isnull=True)
     boxes_to3 = boxes.filter(area__lte=3)
     boxes_to10 = boxes.filter(area__gt=3, area__lte=10)
