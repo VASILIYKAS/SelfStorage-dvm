@@ -6,7 +6,7 @@ from storageapp.models import Storage, StorageUser, Box, UserItem, Order, SentNo
 
 @admin.register(StorageUser)
 class StorageUserAdmin(admin.ModelAdmin):
-    search_fields = ['email', 'first_name', 'last_name', 'phone_number']
+    search_fields = ['email', 'first_name', 'last_name', 'phone_number',]
     list_display = [
         'first_name',
         'last_name',
