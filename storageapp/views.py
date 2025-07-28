@@ -33,7 +33,6 @@ def worker_orders(request):
 def index(request):
     if request.method == 'POST':
         if request.user.is_authenticated:
-            # Юзать имейл юзера, если он уже в бд
             email = request.user.email
             request.session['user_email'] = email
             return HttpResponseRedirect('/boxes/#rent_boxes')
@@ -47,7 +46,26 @@ def index(request):
             else:
                 messages.error(request, "Пожалуйста, укажите ваш email")
                 return redirect('index')
-    return render(request, 'index.html')
+    storage = Storage.objects.first()
+    if storage:
+        total_boxes = Box.objects.filter(storage=storage).count()
+        available_boxes = Box.objects.filter(
+            storage=storage, user__isnull=True).count()
+        sample_box = Box.objects.filter(
+            storage=storage,
+            user__isnull=True
+        ).order_by('price').first()
+    else:
+        total_boxes = 0
+        available_boxes = 0
+        sample_box = None
+
+    return render(request, 'index.html', {
+        'storage': storage,
+        'total_boxes': total_boxes,
+        'available_boxes': available_boxes,
+        'sample_box': sample_box,
+    })
 
 
 def boxes(request):
