@@ -178,7 +178,7 @@ class Order(models.Model):
     box = models.ForeignKey(
         'Box',
         on_delete=models.CASCADE,
-        related_name='orders',
+        related_name='boxes_in_order',
         verbose_name='Арендованный бокс',
         null=True,
         blank=True
@@ -187,7 +187,7 @@ class Order(models.Model):
     discounts = models.ManyToManyField(
         Discount,
         blank=True,
-        related_name='orders',
+        related_name='discounted_orders',
         verbose_name='Промокоды'
     )
 
